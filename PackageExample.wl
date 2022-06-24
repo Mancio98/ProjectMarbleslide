@@ -9,12 +9,13 @@ Begin["`Private`"]
 getIntersection[f1_,f2_,range1_:-11<=y<=11,range2_:-11<=y<=11]:= Return[Solve[{f1,f2,range1,range2},{x,y}]]
 
 
-intersectLines[fun_,funArr_,rangeArr_,currentRange_,ytmp_]:=(
-Module[{result,index,temp},
+intersectLines[fun_,funArr_,rangeArr_,arrSlope_,currentRange_,ytmp_]:=(
+Module[{result,index,temp,block},
 	result = {-11,-11};
 	index=-1;
+	block=False;
 For[i=1,i<=Length[funArr],i++,
- If[fun=!=funArr[[i]],
+ If[fun=!=funArr[[i]] && block==False,
 	
     temp= getIntersection[fun,funArr[[i]],currentRange,rangeArr[[i]]];
 	If[temp=!={}, 
@@ -23,17 +24,27 @@ For[i=1,i<=Length[funArr],i++,
 	If[temp[[2]]>result[[2]] && temp[[2]]<ytmp[[2]],
 		result = temp;
 		index = i;
-		]
+		];
+	If[temp == result,
+		If[arrSlope[[index]]*arrSlope[[i]] <= 0,
+			block=True;
+			, 
+			If[Abs[arrSlope[[i]]]<Abs[arrSlope[[index]]],
+				index=i;]
+			]
+			]
 	] 
 ]
-];
-Return [{result,index}];
+]; 
+Return [{result,index,block}];
 ]);
 
 
 getValueRange[pos_,funIndex_,arrRange_]:=(
 Module[{position},
 position = pos;
+
+Print["ArrRange: ", arrRange];
 If[pos == 2,position = 3];
 
 Return[arrRange[[funIndex]][[position]]];
@@ -56,38 +67,46 @@ If[arrSlope[[funIndex]]=!= 0,
 );
 
 
+CheckSlope[slope1_,slope2_]:=(
+	Return[slope1*slope2>0 || (slope1==0 && slope2==0)]; 
+	 
+)
+
+
 calculatePath[arrFun_,arrRange_,arrSlope_,funOrdered_,rangeOrdered_,pointOrdered_]:=(
-Module[{block=false,isFalling=true,notIntersection=false,
+Module[{block=False,isFalling=True,notIntersection=False,
 tempPoint,tempIndex,res,newRange,tempX,
-currentIndex=1,currentFun=arrFun[[1]],currentRange=arrRange[[1]],currentPoint={arrFun[[1]][[2]],10},newPoint},
+currentIndex=1,currentFun=arrFun[[1]],currentRange=arrRange[[1]],currentPoint={arrFun[[1]][[2]],10},newPoint,tempRes},
 
 SetAttributes[calculateRange,HoldAll];
 SetAttributes[getValueRange,HoldAll];
-Print["currPoint",currentPoint];
-While[block===false && notIntersection===false ,
-If[isFalling===false,
-res = intersectLines[currentFun,arrFun,arrRange,currentRange,currentPoint];
-Print["intersect ",res];
+
+While[block===False && notIntersection===False ,
+If[isFalling===False,
+res = intersectLines[currentFun,arrFun,arrRange,arrSlope,currentRange,currentPoint];
+Print["intersect",res];
 
 If[res[[1]]=!={-11,-11},
 tempPoint = res[[1]];
 tempIndex = res[[2]];
-If[arrSlope[tempIndex]===arrSlope[[currentIndex]],
+
+If[res[[3]]==False && CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]],
+
+AppendTo[funOrdered,arrFun[[tempIndex]]];
+,
+
+AppendTo[funOrdered,0];
+block =True;
+];
 
 AppendTo[pointOrdered,tempPoint];
-AppendTo[funOrdered,arrFun[[tempIndex]]];
-, 
-AppendTo[pointOrdered,tempPoint];
-AppendTo[funOrdered,0];
-block =true;
-];
 newRange = tempPoint[[2]]<=y<=currentPoint[[2]];
 AppendTo[rangeOrdered,newRange];
 currentRange= calculateRange[tempPoint,currentIndex,arrRange,arrSlope];
-Print["CURRENT",currentRange];
 currentFun = arrFun[[tempIndex]];
 currentIndex = tempIndex;
 currentPoint = tempPoint;
+
 ,
 If[arrSlope[[currentIndex]]>0,
 tempX = getValueRange[1,currentIndex,arrRange];
@@ -97,12 +116,13 @@ tempX = getValueRange[2,currentIndex,arrRange];
 
 ];
 
+
 newPoint={tempX,findSolRoot[arrFun[[currentIndex]],tempX]};
 AppendTo[rangeOrdered,newPoint[[2]]<=y<=currentPoint[[2]]];
 
 currentPoint = newPoint;
 AppendTo[pointOrdered,currentPoint];
-isFalling =true;
+isFalling =True;
 AppendTo[funOrdered,x==tempX];
 currentFun = x==tempX;
 AppendTo[arrFun,currentFun];
@@ -113,34 +133,55 @@ currentIndex = Length[arrFun];
 currentRange = -11<=x<=currentPoint[[1]];
 ];
 ,
-res= intersectLines[currentFun,arrFun,arrRange,currentRange,currentPoint];
-Print["intersect ",res];
+res= intersectLines[currentFun,arrFun,arrRange,arrSlope,currentRange,currentPoint];
+Print["intersect falling ",res];
 If[res[[1]] =!={-11,-11},
 
 tempPoint = res[[1]];
 tempIndex = res[[2]];
-AppendTo[pointOrdered,tempPoint];
+tempRes = res[[3]];
+
+Print["ArrFun: ", arrFun[[tempIndex]]];
+Print["ArrFunCurrent: ", arrFun[[currentIndex]]]; 
+Print["SISI"];
+Print[!CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]] && tempRes==True && ToString[arrFun[[tempIndex]][[1]]] === "y"];
+Print[CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]]];
+Print[tempRes==True];
+Print[ToString[arrFun[[tempIndex]][[1]]] === "y"];
+If[!CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]] && tempRes==True && ToString[arrFun[[tempIndex]][[1]]] === "y",
+Print["Entrato QUI"];
+AppendTo[funOrdered,0];
+block = True
+,
+Print["Entrato QUA"];
+isFalling = False;
 AppendTo[funOrdered,arrFun[[tempIndex]]];
+,
+Print["SALVE"];
+];
 
-isFalling = false;
+currentRange = calculateRange[tempPoint,currentIndex,arrRange,arrSlope];
 
-newRange = tempPoint[[2]]<=y<= currentPoint[[2]];
+newRange = tempPoint[[2]] <=y<= currentPoint[[2]];
+
 
 arrRange[[currentIndex]] = newRange;
-AppendTo[rangeOrdered,newRange];
-
 currentIndex = tempIndex;
-currentRange = calculateRange[tempPoint,currentIndex,arrRange,arrSlope];
+AppendTo[rangeOrdered,newRange];
+AppendTo[pointOrdered,tempPoint];
 
 currentFun = arrFun[[tempIndex]];
 currentIndex = tempIndex;
 currentPoint= tempPoint;
-
 ,
-notIntersection = true;
+notIntersection = True;
 AppendTo[rangeOrdered,-11<=y<=currentPoint[[2]]];
 ];
 ];
+
+Print["ArrRange: ", arrRange];
+Print["ArrFun: ", arrFun];
+
 ];
 ];
 
@@ -233,7 +274,7 @@ Return[arrErrors]
 
 
 addOnArr[a_,b_,c_,xy_,startRange_,endRange_,arrFunc_,arrRange_,arrSlope_] :=(
-Module[{arrErrors,tempA,tempB,tempC,tempFunc,tempStart,tempEnd},
+Module[{arrErrors,tempA,tempB,tempC,tempFunc,tempStart,tempEnd,slope},
 arrErrors = checkInput[a,b,c,startRange,endRange];
 If[ContainsAny[arrErrors,{False}],
 (*CAPIRE COSA FARE IN CASO DI ERRORE*)
@@ -251,10 +292,14 @@ tempFunc= y== -tempA/tempB x -tempC/tempB
 
 AppendTo[arrFunc,tempFunc];
 
-If[tempA===0||tempB===0,AppendTo[arrSlope,0],
-If[tempA/tempB>0, AppendTo[arrSlope,-1],
-AppendTo[arrSlope,1]
-]];
+If[tempB==0,
+slope=0,
+
+slope = -tempA/tempB;
+AppendTo[arrSlope,slope]
+
+];
+Print["SLOPE: ",slope];
 
 tempStart=-11;
 tempEnd=11;
@@ -322,7 +367,12 @@ calculatePath[arrFunc,arrRange,arrSlope,funOrdered,rangeOrdered,pointOrdered];
 
 piecewise = CreatePiecewise[funOrdered,pointOrdered,rangeOrdered];
 
+Print[piecewise];
 res = CreatePlot[inputFun,inputRange];
+
+Print["funcordered", funOrdered];
+Print["rangeordered", rangeOrdered];
+Print["pointordered", pointOrdered];
 PlotTemp = CreateAnimate[res[[1]],res[[2]],graphStar,arrStar,piecewise,nLevel]
 )
 
@@ -330,7 +380,7 @@ PlotTemp = CreateAnimate[res[[1]],res[[2]],graphStar,arrStar,piecewise,nLevel]
 CreateInitPlot[graphStar_,PlotTemp_,arrStar_,nLevel_]:=(
 graphStar = InitializeStar[arrStar[[nLevel]][[1]]];
 
-PlotTemp = Show[Graphics[{graphStar,{PointSize[Large],Point[{1,10}]}}],Axes->True,AxesOrigin->{0,0},
+PlotTemp = Show[Graphics[{graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}],Axes->True,AxesOrigin->{0,0},
 ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}];
 )
 
@@ -344,9 +394,9 @@ ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}];
 
 init[]:=(
 
-Print[DynamicModule[{funca= "",funcb="",funcc="",xy,range1="",range2="",arrFunc={x==1},
+Print[DynamicModule[{funca= "",funcb="",funcc="",xy,range1="",range2="",arrFunc={},
 arrRange={-11<=x<=10},arrSlope={0},inputFun,inputRange,PlotTemp,popup,delfun="",
-add,delete,start,enable=true,res,text={},result=0,
+add,delete,start,enable=True,res,text={},result=0,
 funOrdered={},rangeOrdered={}, pointOrdered={},piecewise,arrStar={{{{1,1},{2,3},{5,4.3}},{0,10}},
 {{{0,5},{-2,3}, {-5,0}},{0,10}},
 {{{0,5},{2,3}, {5,0}},{0,10}},
@@ -363,6 +413,7 @@ SetAttributes[CreatePoint,HoldAll];
 SetAttributes[addFun,HoldAll];
 SetAttributes[startFun,HoldAll];
 SetAttributes[CreateInitPlot,HoldAll];
+arrFunc = {x == arrStar[[nLevel]][[2]][[1]]};
 
 (*
 graphStar = InitializeStar[arrStar[[nLevel]][[1]]];
@@ -374,8 +425,13 @@ CreateInitPlot[graphStar,PlotTemp,arrStar,nLevel];
 popup = PopupMenu[Dynamic[delfun],Delete[arrFunc,1]];
 
 Column[{Dynamic[PlotTemp],
-Row[{Button["Previos",If[nLevel > 1, nLevel--;CreateInitPlot[graphStar,PlotTemp,arrStar,nLevel]]],
-Button["Next",If[nLevel < 5, nLevel++;CreateInitPlot[graphStar,PlotTemp,arrStar,nLevel]]]}],
+Row[{Button["Previos",If[nLevel > 1, nLevel--;
+arrFunc = {x == arrStar[[nLevel]][[2]][[1]]};
+CreateInitPlot[graphStar,PlotTemp,arrStar,nLevel]]],
+Button["Next",If[nLevel < 5, nLevel++;
+arrFunc = {x == arrStar[[nLevel]][[2]][[1]]};
+CreateInitPlot[graphStar,PlotTemp,arrStar,nLevel];
+]]}],
 Panel[Column[
 {Row[{
 
