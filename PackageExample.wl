@@ -18,6 +18,8 @@ For[i=1,i<=Length[funArr],i++,
  If[fun=!=funArr[[i]] && block==False,
 	
     temp= getIntersection[fun,funArr[[i]],currentRange,rangeArr[[i]]];
+    Print["cacco",temp];
+    
 	If[temp=!={}, 
 	temp = {x,y} /. temp[[1]];
 	Print[temp];
@@ -143,35 +145,33 @@ tempRes = res[[3]];
 
 Print["ArrFun: ", arrFun[[tempIndex]]];
 Print["ArrFunCurrent: ", arrFun[[currentIndex]]]; 
-Print["SISI"];
-Print[!CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]] && tempRes==True && ToString[arrFun[[tempIndex]][[1]]] === "y"];
-Print[CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]]];
-Print[tempRes==True];
-Print[ToString[arrFun[[tempIndex]][[1]]] === "y"];
+
 If[!CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]] && tempRes==True && ToString[arrFun[[tempIndex]][[1]]] === "y",
-Print["Entrato QUI"];
+
 AppendTo[funOrdered,0];
 block = True
 ,
-Print["Entrato QUA"];
+
 isFalling = False;
 AppendTo[funOrdered,arrFun[[tempIndex]]];
 ,
-Print["SALVE"];
+
 ];
 
-currentRange = calculateRange[tempPoint,currentIndex,arrRange,arrSlope];
 
 newRange = tempPoint[[2]] <=y<= currentPoint[[2]];
 
 
 arrRange[[currentIndex]] = newRange;
 currentIndex = tempIndex;
+currentRange = calculateRange[tempPoint,currentIndex,arrRange,arrSlope];
+Print["crange ",currentRange];
+
 AppendTo[rangeOrdered,newRange];
 AppendTo[pointOrdered,tempPoint];
 
-currentFun = arrFun[[tempIndex]];
-currentIndex = tempIndex;
+currentFun = arrFun[[currentIndex]];
+
 currentPoint= tempPoint;
 ,
 notIntersection = True;
