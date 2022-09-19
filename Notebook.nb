@@ -64679,9 +64679,34 @@ ExpressionUUID->"e3166ff7-5715-41bb-8b6e-8b755285ebd8"
 (* Internal cache information *)
 (*CellTagsOutline
 CellTagsIndex->{
+ "Bibliografia"->{
+  Cell[3908136, 64436, 266, 6, 98, "Title",ExpressionUUID->"92694665-297c-430f-8cb7-79b03b7b50e9",
+   Evaluatable->False,
+   CellTags->"Bibliografia"]},
+ "Carica materiale"->{
+  Cell[3884480, 63934, 261, 5, 98, "Title",ExpressionUUID->"a9cc4b82-37ee-45f4-a1cf-30c4b54440e6",
+   CellTags->"Carica materiale"]},
+ "Gioco"->{
+  Cell[3890810, 64083, 213, 4, 98, "Title",ExpressionUUID->"22b845ff-6965-4d8b-9e86-6659a3f07eb4",
+   CellTags->"Gioco"]},
+ "Introduzione al gioco"->{
+  Cell[3329267, 54760, 294, 6, 98, "Title",ExpressionUUID->"920f5f5f-7830-45ba-8d32-f96d19b9e550",
+   Evaluatable->False,
+   CellTags->"Introduzione al gioco"]},
+ "Linea retta nel piano cartesiano"->{
+  Cell[3315620, 54495, 334, 5, 98, "Title",ExpressionUUID->"1f37a065-ef54-4045-a4e7-222b3572fc91",
+   CellTags->"Linea retta nel piano cartesiano"]},
  "Marbleslide"->{
   Cell[580, 22, 567, 11, 122, "Section",ExpressionUUID->"2b31c948-c248-4b92-b80c-fc5df6215a30",
    CellTags->"Marbleslide"]},
+ "Osservazioni e note conclusive"->{
+  Cell[3910805, 64510, 304, 6, 98, "Title",ExpressionUUID->"275789f1-7a15-4327-9c75-bf6299ad738c",
+   Evaluatable->False,
+   CellTags->"Osservazioni e note conclusive"]},
+ "Rette"->{
+  Cell[3260338, 53516, 416, 7, 98, "Title",ExpressionUUID->"20c5bbaf-2c5f-4100-b031-2e0eb6e2b269",
+   Evaluatable->False,
+   CellTags->"Rette"]},
  "SlideShowHeader"->{
   Cell[3257948, 53438, 122, 2, 74, "SlideShowNavigationBar",ExpressionUUID->"8712f015-0634-4b1d-b94d-d28f62fd815a",
    CellTags->"SlideShowHeader"],
@@ -64698,45 +64723,20 @@ CellTagsIndex->{
   Cell[3907993, 64431, 140, 3, 74, "SlideShowNavigationBar",ExpressionUUID->"99e584b5-7429-4747-a733-371d7b1f8266",
    CellTags->"SlideShowHeader"],
   Cell[3910662, 64505, 140, 3, 74, "SlideShowNavigationBar",ExpressionUUID->"8b67c91f-2c57-4a70-a455-e56d6bef943a",
-   CellTags->"SlideShowHeader"]},
- "Rette"->{
-  Cell[3260338, 53516, 416, 7, 98, "Title",ExpressionUUID->"20c5bbaf-2c5f-4100-b031-2e0eb6e2b269",
-   Evaluatable->False,
-   CellTags->"Rette"]},
- "Linea retta nel piano cartesiano"->{
-  Cell[3315620, 54495, 334, 5, 98, "Title",ExpressionUUID->"1f37a065-ef54-4045-a4e7-222b3572fc91",
-   CellTags->"Linea retta nel piano cartesiano"]},
- "Introduzione al gioco"->{
-  Cell[3329267, 54760, 294, 6, 98, "Title",ExpressionUUID->"920f5f5f-7830-45ba-8d32-f96d19b9e550",
-   Evaluatable->False,
-   CellTags->"Introduzione al gioco"]},
- "Carica materiale"->{
-  Cell[3884480, 63934, 261, 5, 98, "Title",ExpressionUUID->"a9cc4b82-37ee-45f4-a1cf-30c4b54440e6",
-   CellTags->"Carica materiale"]},
- "Gioco"->{
-  Cell[3890810, 64083, 213, 4, 98, "Title",ExpressionUUID->"22b845ff-6965-4d8b-9e86-6659a3f07eb4",
-   CellTags->"Gioco"]},
- "Bibliografia"->{
-  Cell[3908136, 64436, 266, 6, 98, "Title",ExpressionUUID->"92694665-297c-430f-8cb7-79b03b7b50e9",
-   Evaluatable->False,
-   CellTags->"Bibliografia"]},
- "Osservazioni e note conclusive"->{
-  Cell[3910805, 64510, 304, 6, 98, "Title",ExpressionUUID->"275789f1-7a15-4327-9c75-bf6299ad738c",
-   Evaluatable->False,
-   CellTags->"Osservazioni e note conclusive"]}
+   CellTags->"SlideShowHeader"]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"Marbleslide", 3918835, 64681},
- {"SlideShowHeader", 3918983, 64684},
- {"Rette", 3920188, 64701},
- {"Linea retta nel piano cartesiano", 3920373, 64705},
- {"Introduzione al gioco", 3920551, 64708},
- {"Carica materiale", 3920736, 64712},
- {"Gioco", 3920882, 64715},
- {"Bibliografia", 3921024, 64718},
- {"Osservazioni e note conclusive", 3921214, 64722}
+ {"Bibliografia", 3918836, 64681},
+ {"Carica materiale", 3919012, 64685},
+ {"Gioco", 3919158, 64688},
+ {"Introduzione al gioco", 3919309, 64691},
+ {"Linea retta nel piano cartesiano", 3919510, 64695},
+ {"Marbleslide", 3919678, 64698},
+ {"Osservazioni e note conclusive", 3919841, 64701},
+ {"Rette", 3920024, 64705},
+ {"SlideShowHeader", 3920192, 64709}
  }
 *)
 (*NotebookFileOutline
@@ -64815,10 +64815,10 @@ Cell[3640464, 59903, 314, 7, 63, "Input",ExpressionUUID->"e1ff6489-ff2b-463a-ab5
 Cell[3640781, 59912, 1374, 19, 34, "Output",ExpressionUUID->"f9f452ca-58fd-4687-8d6d-3edcbd120e9e"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[3642192, 59936, 89216, 1475, 993, "Input",ExpressionUUID->"54f3340d-01b2-4d08-975b-7268401b5f4f"],
+Cell[3642192, 59936, 89216, 1475, 494, "Input",ExpressionUUID->"54f3340d-01b2-4d08-975b-7268401b5f4f"],
 Cell[3731411, 61413, 152540, 2503, 496, "Output",ExpressionUUID->"22c575a6-2cb1-4e73-9e29-21f9fa6b1747"]
 }, Open  ]],
-Cell[3883966, 63919, 352, 6, 64, "Text",ExpressionUUID->"fa0519ab-b93c-49d0-a658-ed050bd3042b"]
+Cell[3883966, 63919, 352, 6, 38, "Text",ExpressionUUID->"fa0519ab-b93c-49d0-a658-ed050bd3042b"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[3884355, 63930, 122, 2, 74, "SlideShowNavigationBar",ExpressionUUID->"bbc76622-d2df-4a49-ba99-3bd48c05b3e5",
@@ -64882,4 +64882,6 @@ Cell[3917685, 64649, 692, 16, 265, "Text",ExpressionUUID->"e04c3550-5337-43fd-a6
 }
 ]
 *)
+
+(* End of internal cache information *)
 
