@@ -26,20 +26,25 @@ For[i=1,i<=Length[funArr],i++,
     
 	If[temp=!={},  (* caso se esiste un punto di intersezione *)
 	temp = {x,y} /. temp[[1]];
-	If[temp[[2]]>result[[2]] && temp[[2]]<ytmp[[2]], (* controlliamo che il punto sia il pi\[UGrave] prossimo alla pallina *)
-		result = temp;
-		
-		index = i;
-		]
-	(*If[temp == result,
+	
+	If[temp == result,
 		If[arrSlope[[index]]*arrSlope[[i]] <= 0,
 			block=True;
 			, 
 			If[Abs[arrSlope[[i]]]<Abs[arrSlope[[index]]],
 				index=i;]
 			]
+			,
+		If[temp[[2]]>result[[2]] && temp[[2]]<ytmp[[2]], (* controlliamo che il punto sia il pi\[UGrave] prossimo alla pallina *)
+		result = temp;
+		
+		index = i;
+		block=False;
+		]
 			];
-	]*)
+	
+	
+	
 ]]
 ]; 
 Return [{result,index,block}];
@@ -78,7 +83,7 @@ If[arrSlope[[funIndex]]=!= 0,
 
 (*Confronta lo slope di due rette per controllare se ci si trova in una situazione in cui l'inclinazione delle due rette blocca il percorso della pallina *)
 CheckSlope[slope1_,slope2_]:=(
-	Return[slope1*slope2 < 0 ||(slope1==0 && slope2==0)]; 
+	Return[slope1*slope2 < 0 ||(slope1==0 && slope2==0) || slope1==0]; 
 	 
 )
 
@@ -89,8 +94,8 @@ CheckSlope[slope1_,slope2_]:=(
 *)
 calculatePath[arrFun_,arrRange_,arrSlope_,funOrdered_,rangeOrdered_,pointOrdered_]:=(
 Module[{block=False,isFalling=True,notIntersection=False,(* flag per gestire le varie fasi del calcolo del percorso *)
-tempPoint,tempIndex,res,newRange,tempX,
-currentIndex=1,currentFun=arrFun[[1]],currentRange=arrRange[[1]],currentPoint={arrFun[[1]][[2]],10},newPoint,tempBlock}, (* currentPoint \[EGrave] il punto dove si trova la pallina *)
+tempPoint,tempIndex,res,newRange,tempX,tempBlock,
+currentIndex=1,currentFun=arrFun[[1]],currentRange=arrRange[[1]],currentPoint={arrFun[[1]][[2]],10},newPoint}, (* currentPoint \[EGrave] il punto dove si trova la pallina *)
 
 
 While[block===False && notIntersection===False ,(* l'algoritmo viene eseguito finch\[EGrave] la pallina non si blocca o non vengono trovati punti di intersezione *)
@@ -100,8 +105,9 @@ res = intersectLines[currentFun,arrFun,arrRange,arrSlope,currentRange,currentPoi
 If[res[[1]]=!={-11,-11}, (* se esiste un punto di intersezione *)
 tempPoint = res[[1]];(* punto intersezione *)
 tempIndex = res[[2]]; (* indice nell'array della retta intersecata *)
+tempBlock = res[[3]]; 
 
-If[ Not[CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]]], (* controllo se le 2 rette non hanno inclinazione opposta, se vero blocco l'algoritmo *)
+If[ Not[CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]]] && Not[tempBlock], (* controllo se le 2 rette non hanno inclinazione opposta, se vero blocco l'algoritmo *)
 
 AppendTo[funOrdered,arrFun[[tempIndex]]];
 ,
@@ -154,14 +160,14 @@ currentRange = -11<=x<=currentPoint[[1]];
 
 (* caso in cui la pallina segue la retta di caduta (falling = true) *)
 res= intersectLines[currentFun,arrFun,arrRange,arrSlope,currentRange,currentPoint];
-
 If[res[[1]] =!={-11,-11},(* se esiste un punto di intersezione *)
 
 tempPoint = res[[1]];(* punto intersezione *)
 tempIndex = res[[2]]; (* indice nell'array della retta intersecata *)
+tempBlock = res[[3]];
 
 (* se hanno la stessa inclinazione ma perpendicolarmente con un angolo di 90 gradi blocco l'algoritmo *)
-If[CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]] && StringContainsQ[ToString[arrFun[[tempIndex]][[1]]],"y"],
+If[(CheckSlope[arrSlope[[tempIndex]],arrSlope[[currentIndex]]] && StringContainsQ[ToString[arrFun[[tempIndex]][[1]]],"y" ] ) || tempBlock == True,
 
 AppendTo[funOrdered,0];
 block = True;
@@ -241,8 +247,8 @@ If[tempPoint[[1]]-0.400<=graphStar[[i]][[3]][[1]][[1]]<=tempPoint[[1]]+0.400 && 
 graphStar[[i]][[3]] = Point[{-20,20}]; result=result+1;]; 
 ];
 If[result===Length[arrStar[[nLevel]][[1]]], text= Text[Style["LEVEL COMPLETED",{0,0},FontSize->40]]];
-(*If[yInput>=9.8, graphStar= InitializeStar[arrStar[[nLevel]][[1]]];result=0;]; (* Se non avviene nessun contatto inserisco nell'array sempre le posizioni iniziali delle verdi*)
-*)
+If[yInput>=9.8, graphStar= InitializeStar[arrStar[[nLevel]][[1]]];result=0;]; (* Se non avviene nessun contatto inserisco nell'array sempre le posizioni iniziali delle verdi*)
+
 Return[graphStar];
 ]);
 
@@ -266,7 +272,7 @@ text
 
 
 (*controlla che l'input inserito dall'utente sia del pattern voluto, ovvero frazione o intero con segno opzionale*)
-checkInput[a_,b_,c_,startRange_,endRange_]:=(
+checkInput[a_,b_,c_,startRange_,endRange_] :=(
 Module[{patternfunc,arrErrors},
 patternfunc ="[+-]?(((\\d)+/[1-9](\\d)*)|(\\d)+)"; (* pattern *)
 arrErrors = {};
@@ -335,8 +341,9 @@ AppendTo[arrRange,tempRange];
 If[tempB==0,
 slope=0,
 slope = -tempA/tempB;
+];
 AppendTo[arrSlope,slope];
-],
+,
 MessageDialog["Retta gi\[AGrave] inserita!"]
 ]
 ]);
