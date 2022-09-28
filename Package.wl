@@ -272,7 +272,7 @@ text
 
 
 (*controlla che l'input inserito dall'utente sia del pattern voluto, ovvero frazione o intero con segno opzionale*)
-checkInput[a_,b_,c_,startRange_,endRange_] :=(
+checkInput[a_,b_,c_,startRange_,endRange_]:=(
 Module[{patternfunc,arrErrors},
 patternfunc ="[+-]?(((\\d)+/[1-9](\\d)*)|(\\d)+)"; (* pattern *)
 arrErrors = {};
@@ -307,7 +307,7 @@ Return[False];
 
 
 (* controlla l'input dell'utente e lo elabora prima di inserirlo nell'array delle rette *)
-addOnArr[a_,b_,c_,xy_,startRange_,endRange_,inputFun_,arrRange_,arrSlope_] :=(
+addOnArr[a_,b_,c_,startRange_,endRange_,inputFun_,arrRange_,arrSlope_] :=(
 Module[{arrErrors,tempA,tempB,tempC,tempFunc,tempStart,tempEnd,tempRange,slope},
 
 arrErrors = checkInput[a,b,c,startRange,endRange];
@@ -319,7 +319,6 @@ Return[];
 tempA = ToExpression[a];
 tempB = ToExpression[b];
 tempC = ToExpression[c];
-xy = ToExpression[xy]; (* se il range \[EGrave] su x o y *)
 
 (* trasformo in funzioni lineari per y *)
 If[tempB===0 , tempFunc = x ==-tempC/tempA, 
@@ -332,7 +331,7 @@ tempEnd=12;
 
 If[startRange=!="",tempStart = ToExpression[startRange]];
 If[endRange =!= "",tempEnd = ToExpression[endRange]];
-tempRange = tempStart<=xy<=tempEnd;
+tempRange = tempStart<=x<=tempEnd;
 
 If[Not[checkDoubleFun[tempFunc,inputFun]],
 AppendTo[inputFun,tempFunc];
@@ -393,9 +392,9 @@ Return[{funcPlot,linePlot}];
 
 
 (* richiama tutte le funzioni utili all'aggiunta di una nuova retta, utilizzata dal bottone add *)
-addFun[funca_,funcb_,funcc_,xy_,range1_,range2_,inputFun_,arrRange_,arrSlope_,graphStar_,delfun_,PlotTemp_,popup_,arrStar_,nLevel_]:=(
+addFun[funca_,funcb_,funcc_,range1_,range2_,inputFun_,arrRange_,arrSlope_,graphStar_,delfun_,PlotTemp_,popup_,arrStar_,nLevel_]:=(
 
-addOnArr[funca,funcb,funcc,xy,range1,range2,inputFun,arrRange,arrSlope];
+addOnArr[funca,funcb,funcc,range1,range2,inputFun,arrRange,arrSlope];
 res = CreatePlot[inputFun,Delete[arrRange,1]];
 PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]},AxesOrigin->{0,0},Axes->True,ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}];
 popup = PopupMenu[Dynamic[delfun],inputFun];
@@ -451,7 +450,7 @@ popup = PopupMenu[Dynamic[delfun],inputFun]
 
 
 (* main del programma, racchiude tutte i parametri utili e principali per il funzionamento, oltre all'interfaccia
-* funca,funcb,funcc,xy,range1,range2 sono le variabili dove vengono salvati i valori inseriti dall'utente
+* funca,funcb,funcc,range1,range2 sono le variabili dove vengono salvati i valori inseriti dall'utente
 * arrRange, arrSlope, inputFun condividono lo stesso ordine delle rette
 * add, delete, start bottoni dell'interfaccia
 * popup per la scelta della retta da eliminare
@@ -462,9 +461,9 @@ popup = PopupMenu[Dynamic[delfun],inputFun]
 *)
 init[]:=(
 
-Print[DynamicModule[{funca= "",funcb="",funcc="",xy,range1="",range2="",
+Print[DynamicModule[{funca= "",funcb="",funcc="",range1="",range2="",
 arrRange={-11<=x<=10},arrSlope={0},inputFun={},PlotTemp,popup,delfun="",
-add,delete,start,enable=true,res,text={},result=0,available=False,
+add,delete,start,enable=True,res,text={},result=0,available=False,
 funOrdered={},rangeOrdered={}, pointOrdered={},piecewise,arrStar={
 {{{-2,-2},{-4,-4},{-6,-6}},{0,10}}, (* x - y = 0, easy level*)
 {{{2,0},{4,-1},{8,-3}},{0,10}}, (* x + 2y - 2  = 0 -> y = -.5*x +1, easy level*)
@@ -521,7 +520,7 @@ InputField[Dynamic[funca],String,FieldHint->"Enter a",FieldSize->Tiny]," x ",
 InputField[Dynamic[funcb],String,FieldHint->"Enter b",FieldSize->Tiny], " y ",
 InputField[Dynamic[funcc],String,FieldHint->"Enter c",FieldSize->Tiny]," =0 "}],
 Row[{InputField[Dynamic[range1],String,FieldHint->"Enter range1",FieldSize->Tiny]," <= ",
-PopupMenu[Dynamic[xy],{"x","y"}]," <= ",
+" x "," <= ",
 InputField[Dynamic[range2],String,FieldHint->"Enter range2",FieldSize->Tiny]
 
 }],
@@ -541,13 +540,10 @@ PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[a
 Enabled->Dynamic[available]
 
 ]
-}]
-
-}],"INSERISCI LA FUNZIONE"],
-
-(* bottone di aggiunta di una retta *)
+}],
+Row[{(* bottone di aggiunta di una retta *)
 add = Button["Add",
-addFun[funca,funcb,funcc,xy,range1,range2,inputFun,arrRange,arrSlope,graphStar,delfun,PlotTemp,popup,arrStar,nLevel];
+addFun[funca,funcb,funcc,range1,range2,inputFun,arrRange,arrSlope,graphStar,delfun,PlotTemp,popup,arrStar,nLevel];
 If[Length[inputFun]>0,available=True,available=False];
 ],
 
@@ -556,6 +552,11 @@ start = Button["Start",
 startFun[inputFun,funOrdered,pointOrdered,piecewise,PlotTemp,arrRange,arrSlope,
 rangeOrdered,graphStar,arrStar,nLevel];
 ]
+}]
+
+}],"INSERISCI LA FUNZIONE"]
+
+
 
 }]
 ]]);
