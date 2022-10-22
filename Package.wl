@@ -18,10 +18,11 @@ x;
 init::usage=" "
 
 Begin["`Private`"]
+maxVal = 11;
 
 
 (*calcola punti intersezione tra 2 rette*)
-getIntersection[f1_,f2_,range1_:-11<=y<=11,range2_:-11<=y<=11]:= Return[Solve[{f1,f2,range1,range2},{x,y}]]
+getIntersection[f1_,f2_,range1_:-maxVal<=y<=maxVal,range2_:-maxVal<=y<=maxVal]:= Return[Solve[{f1,f2,range1,range2},{x,y}]]
 
 
 (*calcola punti di intersezione tra 1 retta e le restanti
@@ -33,7 +34,7 @@ getIntersection[f1_,f2_,range1_:-11<=y<=11,range2_:-11<=y<=11]:= Return[Solve[{f
 *)
 intersectLines[fun_,funArr_,rangeArr_,arrSlope_,currentRange_,ytmp_]:=
 Module[{result,index,temp,block},
-	result = {-11,-11}; (*valore se non esiste intersezione*)
+	result = {-maxVal,-maxVal}; (*valore se non esiste intersezione*)
 	index=-1;
 	block=False;
 	
@@ -88,7 +89,7 @@ If[arrSlope[[funIndex]]=!= 0, (* se \[EGrave] una retta obliqua *)
 		Return[arrRange[[funIndex]][[1]]<=x<=point[[1]]],
 	Return[point[[1]]<=x<=arrRange[[funIndex]][[2]]]
 	],	
-	Return[-11<=x<=11]
+	Return[-maxVal<=x<=maxVal]
 ]
 ]
 
@@ -114,7 +115,7 @@ While[block===False && notIntersection===False,(* l'algoritmo viene eseguito fin
 If[isFalling===False, (* caso in cui la pallina non sta cadendo per forza di gravit\[AGrave], ovvero parallelamente all'asse y *)
 res = intersectLines[currentFun,arrFun,arrRange,arrSlope,currentRange,currentPoint]; (* risultato della ricerca di punti di interseazione *)
 
-If[res[[1]]=!={-11,-11}, (* se esiste un punto di intersezione *)
+If[res[[1]]=!={-maxVal,-maxVal}, (* se esiste un punto di intersezione *)
 tempPoint = res[[1]];(* punto intersezione *)
 tempIndex = res[[2]]; (* indice nell'array della retta intersecata *)
 tempBlock = res[[3]]; 
@@ -161,17 +162,17 @@ AppendTo[funOrdered,x==tempX];
 (* nuova retta di caduta, range e slope *)
 currentFun = x==tempX;
 AppendTo[arrFun,currentFun];
-AppendTo[arrRange,-11<=x<=currentPoint[[1]]];
+AppendTo[arrRange,-maxVal<=x<=currentPoint[[1]]];
 AppendTo[arrSlope,0];
 
 currentIndex = Length[arrFun];
-currentRange = -11<=x<=currentPoint[[1]]
+currentRange = -maxVal<=x<=currentPoint[[1]]
 ]
 ,
 
 (* caso in cui la pallina segue la retta di caduta (falling = true) *)
 res= intersectLines[currentFun,arrFun,arrRange,arrSlope,currentRange,currentPoint];
-If[res[[1]] =!={-11,-11},(* se esiste un punto di intersezione *)
+If[res[[1]] =!={-maxVal,-maxVal},(* se esiste un punto di intersezione *)
 
 tempPoint = res[[1]];(* punto intersezione *)
 tempIndex = res[[2]]; (* indice nell'array della retta intersecata *)
@@ -209,7 +210,7 @@ currentPoint= tempPoint
 
 (* caso in cui la callina segue la retta di caduta e non incontra intersezioni, termino *)
 notIntersection = True;
-AppendTo[rangeOrdered,-11<=y<=currentPoint[[2]]]
+AppendTo[rangeOrdered,-maxVal<=y<=currentPoint[[2]]]
 ]
 ]
 
@@ -294,8 +295,8 @@ linePlot,
 {PointSize[Large],Point[pieceWise/.y->yvalue]},(* calcola la posizione della pallina su y *)
 CreatePoint[yvalue,pieceWise,graphStar,arrStar,text,result,nLevel], (* controllo se ho colpito una pallina verde*)
 text 
-}]},Axes->True,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}],
-{yvalue,10,-11,.125},AnimationRunning->True,AnimationRepetitions->1,ControlPlacement->Bottom]
+}]}](*,Axes->True,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}]*),
+{yvalue,10,-maxVal,.125},AnimationRunning->True,AnimationRepetitions->1,ControlPlacement->Bottom]
 
 ]
 
@@ -308,6 +309,9 @@ RationalQ[x_]:=Return[Head[x]===Rational]
 checkInput[a_,b_,c_,startRange_,endRange_]:=
 Module[{patternfunc,arrErrors},
 
+If[ToExpression[a] == 0 && ToExpression[b]== 0,
+Return[False]
+];
 If[Not[IntegerQ[ToExpression[a]]] && Not[RationalQ[ToExpression[a]]],
 Return[False]
 ];
@@ -366,8 +370,8 @@ tempFunc= y== -tempA/tempB x -tempC/tempB
   ];
 
 (*calcolo il range *)
-tempStart=-12;
-tempEnd=12;
+tempStart=-maxVal;
+tempEnd=maxVal;
 
 If[startRange=!="",tempStart = ToExpression[startRange]];
 If[endRange =!= "",tempEnd = ToExpression[endRange]];
@@ -435,9 +439,10 @@ Return[{funcPlot,linePlot}]
 (* richiama tutte le funzioni utili all'aggiunta di una nuova retta, utilizzata dal bottone add *)
 addFun[funca_,funcb_,funcc_,range1_,range2_,inputFun_,arrRange_,arrSlope_,graphStar_,delfun_,PlotTemp_,popup_,arrStar_,nLevel_]:=
 Module[{res},
+
 addOnArr[funca,funcb,funcc,range1,range2,inputFun,arrRange,arrSlope]; (* controllo dell'input e aggiunta agli array dei valori come range e slope *)
 res = CreatePlot[inputFun,Delete[arrRange,1]]; (*aggiunta della funzione alla plot *)
-PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]},AxesOrigin->{0,0},Axes->True,ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}]; (* creazione plot*)
+PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]}(*,AxesOrigin->{0,0},Axes->True,ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}*)]; (* creazione plot*)
 popup = PopupMenu[Dynamic[delfun],inputFun] (* aggiunta funzione al popup delle funzioni da poter selezionare per eliminare in caso*)
 ]
 
@@ -469,8 +474,8 @@ CreateInitPlot[graphStar_,PlotTemp_,arrStar_,nLevel_]:=
 Module[{},
 graphStar = InitializeStar[arrStar[[nLevel]][[1]]];
 
-PlotTemp = Show[Graphics[{graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}],Axes->True,AxesOrigin->{0,0},
-ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}]
+PlotTemp = Show[Graphics[{graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}](*,Axes->True,AxesOrigin->{0,0},
+ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}*)]
 ]
 
 
@@ -479,7 +484,7 @@ ResetData[inputFun_,result_,arrRange_,arrSlope_,funOrdered_,rangeOrdered_,pointO
 Module[{},
 inputFun = {};
 result = 0;
-arrRange={-11<=x<=10};
+arrRange={-maxVal<=x<=maxVal};
 arrSlope={0};
 funOrdered={};
 rangeOrdered={};
@@ -504,7 +509,7 @@ popup = PopupMenu[Dynamic[delfun],inputFun]
 * il resto sono variabili utili per la gestione
 *)
 init[]:= DynamicModule[{funca= "",funcb="",funcc="",range1="",range2="",
-arrRange={-11<=x<=10},arrSlope={0},inputFun={},PlotTemp,popup,delfun="",
+arrRange={-maxVal<=x<=maxVal},arrSlope={0},inputFun={},PlotTemp,popup,delfun="",
 add,delete,start,enable=True,res,text={},result=0,
 funOrdered={},rangeOrdered={}, pointOrdered={},piecewise,arrStar={
 {{{-2,-2},{-4,-4},{-6,-6}},{0,10}}, (* x - y = 0, easy level*)
@@ -531,6 +536,9 @@ SetAttributes[startFun,HoldAll];
 SetAttributes[CreateInitPlot,HoldAll];
 SetAttributes[calculateRange,HoldAll];
 SetAttributes[getValueRange,HoldAll];
+
+SetOptions[{Graphics,Plot},Axes->True,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}];
+
 (* creazione del plot iniziale *)
 CreateInitPlot[graphStar,PlotTemp,arrStar,nLevel];
 popup = PopupMenu[Dynamic[delfun],inputFun];
@@ -568,8 +576,8 @@ deleteFun[inputFun,arrRange,arrSlope,delfun,popup];
 res = CreatePlot[inputFun,Delete[arrRange,1]];
 If[Length[inputFun]>0,available=True,available=False];
 If[res[[1]] == {}, 
-PlotTemp = Show[Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}],Axes->True,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}],
-PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]},AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-11,11},{-11,11}}]
+PlotTemp = Show[Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]],(*,Axes->True,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}],*)
+PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]}](*,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}]*)
 ],
 Enabled->Dynamic[available]
 ]
