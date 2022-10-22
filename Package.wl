@@ -442,7 +442,7 @@ Module[{res},
 
 addOnArr[funca,funcb,funcc,range1,range2,inputFun,arrRange,arrSlope]; (* controllo dell'input e aggiunta agli array dei valori come range e slope *)
 res = CreatePlot[inputFun,Delete[arrRange,1]]; (*aggiunta della funzione alla plot *)
-PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]}(*,AxesOrigin->{0,0},Axes->True,ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}*)]; (* creazione plot*)
+PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]}]; (* creazione plot*)
 popup = PopupMenu[Dynamic[delfun],inputFun] (* aggiunta funzione al popup delle funzioni da poter selezionare per eliminare in caso*)
 ]
 
@@ -474,8 +474,7 @@ CreateInitPlot[graphStar_,PlotTemp_,arrStar_,nLevel_]:=
 Module[{},
 graphStar = InitializeStar[arrStar[[nLevel]][[1]]];
 
-PlotTemp = Show[Graphics[{graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}](*,Axes->True,AxesOrigin->{0,0},
-ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}*)]
+PlotTemp = Show[Graphics[{graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]]
 ]
 
 
@@ -576,8 +575,8 @@ deleteFun[inputFun,arrRange,arrSlope,delfun,popup];
 res = CreatePlot[inputFun,Delete[arrRange,1]];
 If[Length[inputFun]>0,available=True,available=False];
 If[res[[1]] == {}, 
-PlotTemp = Show[Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]],(*,Axes->True,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}],*)
-PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]}](*,AxesOrigin->{0,0},ImageSize->Large,AspectRatio->1,PlotRange->{{-maxVal,maxVal},{-maxVal,maxVal}}]*)
+PlotTemp = Show[Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]],
+PlotTemp = Show[{res[[1]],Graphics[{res[[2]],graphStar,{PointSize[Large],Point[arrStar[[nLevel]][[2]]]}}]}]
 ],
 Enabled->Dynamic[available]
 ]
